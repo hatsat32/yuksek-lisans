@@ -1,0 +1,45 @@
+@startuml
+
+interface Ucabilir {
+    ucmaHizi
+    uc()
+}
+
+interface Yuruyebilir {
+    YurumeHizi
+    yuz()
+}
+
+class Kus {
+    String isim
+    int yas
+    String getIsim()
+    int getYas()
+    void setIsim()
+    void setYas()
+    void yazYas()
+    void yazIsim()
+}
+
+class Baykus {
+
+}
+
+class Guvercin {
+
+}
+
+class DeveKusu {
+
+}
+
+Kus <|-- Baykus
+Kus <|-- Guvercin
+Kus <|-- DeveKusu
+
+Yuruyebilir <|-- Baykus
+Ucabilir <|-- Baykus
+
+Ucabilir <|-- Guvercin
+
+@enduml

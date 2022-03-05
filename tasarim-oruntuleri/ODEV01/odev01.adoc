@@ -1,0 +1,238 @@
+= Title of the document
+:source-language: python
+
+:toc:
+
+== Özet
+
+=== `uninitialized` and `initialized` 
+
+`uninitialized` tanımlanmış fakat ilk değeri atanmamış değişkendir.
+
+    int degisken;
+
+Bazı diller `uninitialized` değişkenllere veri tipine göre 0 değer olarak kabul edilen değeri atarlar. Örneğin golang int için 0 değerini, string için boş string değerini değişken tanımlanır tanımlanmaz atar
+
+`initialized` tanımlanmış ve ilk değeri atanmış değişkendir.
+
+    int degisken = 123;
+
+=== pass-by-reference or pass-by-values
+
+Bir fonksiyon çağrılırken değişkenin kendisimi yoksa değişkenin adresinin (referans) mi argüman olacağıdır.
+
+Örneğin bir fonksiyon çağrılırken değişken boyutu büyük olduğu için ve hafızadan tararruf etmek için değişkenin bir kopyasını fonksiyona vermek yerine adresi (pointer) verilebilir. Buna __pass by reference__ denilir.
+
+[source,python]
+----
+dizi = [1, 2, 3, 4, 5]
+diziyi_sirala(&dizi)
+----
+
+Eğer değişken pointer olarak değilde değerin kendisi veriliyor ise o zaman __pass by value__ denilebilir. Bu durumda sistem veriyi kopyaladığı için daha fazla bellek kullanır.
+
+[source,python]
+----
+dizi = [1, 2, 3, 4, 5]
+dizi = diziyi_sirala(dizi)
+----
+
+=== instance of a class
+
+Bir sınıfın örneğidir. Şöyle ki bir sınıf aslında bir taslaktır. Bu taslağın kullanılarak oluşturulan örneklerine nesne denir.
+
+[source,python]
+----
+# bu sınıf bir taskaktır
+class Canli:
+    pass
+
+# bu ise bir nesnedir. Yani sınıfın bir örneği
+canli = Canli()
+----
+
+=== Compiler-generated default constructor
+
+Eğer bir sınıf bir contructor tanımlamaz ise compiler veya interpreter kendisi argüman almayan bir contructor tanımlarlar.
+
+Örnek bir python kodu şu şekildedir:
+
+[source,python]
+----
+class Canli:
+    pass
+----
+
+Bu durumda python yorumlayıcısı (interpreter) boş bir __init__ constructor tanımlayacaktır. Yukarıdaki kod ile aşağıdaki aslında aynıdır.
+
+
+[source,python]
+----
+class Canli:
+    def __init__(self):
+        pass
+----
+
+
+=== default parameters
+
+Bir fonksiyon parametresi için tanımlanan varsayılan değerlerdir. O fonksiyon parametresine değer verilmez ise varsayılan değer kullanılır.
+
+[source,python]
+----
+def merhaba(msg = "Dünya"):
+    print("Merhaba " + msg)
+
+>>> merhaba()
+Merhaba Dünya
+>>> merhaba("Uranüs")
+Merhaba Uranüs
+----
+
+
+=== `this` for disambiguation
+
+`this` anahtar kelimesi bir nesneyi işaret etmek için kullanılır. Python dilinde karşılığı `self` dir.
+
+[source,python]
+----
+class Canli:
+    def __init__(self, degisken):
+        self.degisken = degisken
+----
+
+=== `static` değişkenler ve fonksiyonlar
+
+`static` anahtar kelimesi bir değişkenin nesneye özel olmayıp sınıfa ait olduğunu belirtir. Bu nedenle static olarak belirtilmiş bir değişkendeki değişiklik bütün nesneleri etkiler.
+
+Fonksiyonlarda ise nesne oluşturulmadan çağrılabilen fonksiyonlar için kullanılır.
+
+=== method overriding
+
+Bir metod chield sınıflar tarafından override edilebilir. Yani metod tekrardan yazılabilir. Örnek bir java kodu:
+
+[source,python]
+----
+abstract class Kus {
+    public void baseinfo() {
+        System.out.println("method of Class B");
+    }
+}
+class Baykus extends Kus {
+    @Override
+    public void baseinfo() {
+        System.out.println("method of Class B");
+    }
+}
+----
+
+Eğer `Kus` sınıfında `baseinfo` fonksiyonu `final` olarak tanımlansaydı bu sefer java derleyicisi buna izin vermeyecektir.
+
+== Örnek Proje
+
+=== Interface ler
+
+==== Interface `Ucabilir`
+
+Bu interface yi implemete etmek isteyen sınıflar `public void uc()` metodunu override etmelidir.
+
+==== Interface `Yuruyebilir`
+
+Bu interface yi implemete etmek isteyen sınıflar `public void yuru()` metodunu override etmelidir.
+
+=== Sınıflar
+
+==== `Kus` Sınıfı
+
+[plantuml]
+----
+class Kus {
+    String isim
+    int yas
+
+    String getIsim()
+    int getYas()
+    void setIsim()
+    void setYas()
+    void yazYas()
+    void yazIsim()
+}
+----
+
+Değişkenler:
+
+* int yas
+* String isim
+
+Metodlar:
+
+* `getIsim()` İsmi döndürür
+* `getYas()` Yaşı dönrürür
+* `setIsim()` İsme değer atar
+* `setYas()` Yaşı değiştirir. Negatif değerlere izin verilmez
+* `yazYas()` Yaşı yazdırır
+* `yazIsim()` İsmi yazdırır
+
+=== `Baykus` Sınıfı
+
+Kuş sınıfından türetilmiştir. `Yuruyebilir` ve `Ucabilir` sınıflarını implemente eder.
+
+[plantuml]
+----
+class Baykus {
+    String isim
+    int yas
+
+    String getIsim()
+    int getYas()
+    void setIsim()
+    void setYas()
+    void yazYas()
+    void yazIsim()
+}
+----
+
+=== `Guvercin` Sınıfı
+
+Kuş sınıfından türetilmiştir. `Yuruyebilir` ve `Ucabilir` sınıflarını implemente eder.
+
+[plantuml]
+----
+class Guvercin {
+    String isim
+    int yas
+
+    String getIsim()
+    int getYas()
+    void setIsim()
+    void setYas()
+    void yazYas()
+    void yazIsim()
+}
+----
+
+=== `DeveKusu` Sınıfı
+
+Kuş sınıfından türetilmiştir. `Yuruyebilir` sınıfını implemente eder.
+
+[plantuml]
+----
+class DeveKusu {
+    String isim
+    int yas
+
+    String getIsim()
+    int getYas()
+    void setIsim()
+    void setYas()
+    void yazYas()
+    void yazIsim()
+}
+----
+
+== Diyagram
+
+[plantuml]
+----
+include::odev01.puml[]
+----
