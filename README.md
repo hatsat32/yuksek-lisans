@@ -1,0 +1,2 @@
+# yuksek-lisans
+Yüksek Lisans
