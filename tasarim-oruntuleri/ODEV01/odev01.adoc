@@ -1,13 +1,17 @@
-= Title of the document
+= Asciidoc ve PlantUML ÖDEVİ
 :source-language: python
 
 :toc:
 
+> **NOT**: Ben aslında python programcısıyım. Fakat bazı kavramlarda python dili kullanamıyorum. Örneğin `static`, `public` gibi kavramlar python da yok. Bu nednele bazı noktalarda javadan faydalandım.
+
 == Özet
 
-=== `uninitialized` and `initialized` 
+=== `uninitialized` ve `initialized` Değişkenler
 
 `uninitialized` tanımlanmış fakat ilk değeri atanmamış değişkendir.
+
+Örneğin burada degisken isminde bir değişken tanımlanmıştır fakat ilk değeri atanmamıştır.
 
     int degisken;
 
@@ -17,13 +21,25 @@ Bazı diller `uninitialized` değişkenllere veri tipine göre 0 değer olarak k
 
     int degisken = 123;
 
+=== range-based for loop
+
+Bazı programlama dilleri diziler üzerinde döngü işlemlerini kolaylaştırmak için indix değerleri yerine daha pratik olan range özellikleri sağlarlar. Örneğin golang dilinde örnek bir range loop şu şekildedir:
+
+[source,go]
+----
+sayilar := []int{2, 3, 4}
+for _, sayi := range sayilar {
+    // her döngü turunda sayi değişkenine sıradaki döngü elemanı atanacak
+}
+----
+
 === pass-by-reference or pass-by-values
 
-Bir fonksiyon çağrılırken değişkenin kendisimi yoksa değişkenin adresinin (referans) mi argüman olacağıdır.
+Bir fonksiyon çağrılırken değişkenin kendisi mi yoksa değişkenin adresinin (referans) mi argüman olacağıdır.
 
 Örneğin bir fonksiyon çağrılırken değişken boyutu büyük olduğu için ve hafızadan tararruf etmek için değişkenin bir kopyasını fonksiyona vermek yerine adresi (pointer) verilebilir. Buna __pass by reference__ denilir.
 
-[source,python]
+[source,cpp]
 ----
 dizi = [1, 2, 3, 4, 5]
 diziyi_sirala(&dizi)
@@ -31,10 +47,33 @@ diziyi_sirala(&dizi)
 
 Eğer değişken pointer olarak değilde değerin kendisi veriliyor ise o zaman __pass by value__ denilebilir. Bu durumda sistem veriyi kopyaladığı için daha fazla bellek kullanır.
 
-[source,python]
+[source,cpp]
 ----
 dizi = [1, 2, 3, 4, 5]
 dizi = diziyi_sirala(dizi)
+----
+
+=== arrays that can shrink at run time (vector, ArrayList vb.)
+
+Arrayler bilindiği gibi sabit uzunluktadırlar. Yani bir defa tanımlandımı boyutları değiştirilemez. Fakat ihtiyaçlar gereği çalışma zamanında boyutu değiştirilebilen dizilere ihtiyaç duyarız. Her programlama dili bunu bir şekilde sağlar.
+
+Python dilinde sabit boyutlu diziler için tuple kullanılır. tuple lar bir defa tanımlandıktan sonra boyutları değiştirilemez. Örnek python kodu:
+
+[source,python]
+----
+>>> t = (1, 2, 3)
+----
+
+Burada t değişkeninin boyutu kesinlikle değiştirilemez.
+
+Dinamik boyutlu diziler için python da listeler kullanılır. Diziler tuple lara göre daha yavaş çalışır fakat dinamik boyut sağlarlar.
+
+[source,python]
+----
+>>> a = [1, 2, 3]
+>>> a.append(4)
+>>> a
+[1, 2, 3, 4]
 ----
 
 === instance of a class
@@ -50,6 +89,8 @@ class Canli:
 # bu ise bir nesnedir. Yani sınıfın bir örneği
 canli = Canli()
 ----
+
+Burada sınıfı bir plan veya projeye benzetebiliriz. Plan tek başına bir şey ifade etmez, sadece bir taslaktır. Bu planı siz gerçekleştirdiğinizde (nesne ürettiğinizde) o zaman bir anlam ifade eder.
 
 === Compiler-generated default constructor
 
@@ -73,7 +114,6 @@ class Canli:
         pass
 ----
 
-
 === default parameters
 
 Bir fonksiyon parametresi için tanımlanan varsayılan değerlerdir. O fonksiyon parametresine değer verilmez ise varsayılan değer kullanılır.
@@ -94,9 +134,14 @@ Merhaba Uranüs
 
 `this` anahtar kelimesi bir nesneyi işaret etmek için kullanılır. Python dilinde karşılığı `self` dir.
 
+`self` nesneye işaret eder. Yani nesnenin ismidir. Nesnenin bir değişkenine veya fonksiyonuna erişilmek istendiğinde kullanılır.
+
 [source,python]
 ----
 class Canli:
+    degisken = 0
+    
+    # constructor
     def __init__(self, degisken):
         self.degisken = degisken
 ----
@@ -105,28 +150,106 @@ class Canli:
 
 `static` anahtar kelimesi bir değişkenin nesneye özel olmayıp sınıfa ait olduğunu belirtir. Bu nedenle static olarak belirtilmiş bir değişkendeki değişiklik bütün nesneleri etkiler.
 
+[source,java]
+----
+class HelloWorld {
+    public static void main(String[] args) {
+        SinifIsmi si1 = new SinifIsmi();
+        SinifIsmi si2 = new SinifIsmi();
+        System.out.println("si1: " + si1.degisken); // si1: 0
+        si1.degisken = 5;
+        System.out.println("si2: " + si2.degisken); // si2: 5
+    }
+}
+
+class SinifIsmi {
+    static int degisken = 0;
+}
+----
+
 Fonksiyonlarda ise nesne oluşturulmadan çağrılabilen fonksiyonlar için kullanılır.
+
+[source,java]
+----
+class SinifIsmi {
+    public static void fun() {
+        System.out.println("Statik fonksiyon");
+    }
+}
+
+// statik fonksiyon sınıf üzerinden çağrılabilir
+SinifIsmi.fun();
+----
 
 === method overriding
 
 Bir metod chield sınıflar tarafından override edilebilir. Yani metod tekrardan yazılabilir. Örnek bir java kodu:
 
-[source,python]
+[source,java]
 ----
 abstract class Kus {
     public void baseinfo() {
-        System.out.println("method of Class B");
+        System.out.println("method of Class Kus");
     }
 }
+
 class Baykus extends Kus {
     @Override
     public void baseinfo() {
-        System.out.println("method of Class B");
+        System.out.println("method of Class Baykus");
     }
 }
 ----
 
 Eğer `Kus` sınıfında `baseinfo` fonksiyonu `final` olarak tanımlansaydı bu sefer java derleyicisi buna izin vermeyecektir.
+
+[source,python]
+----
+abstract class Kus {
+    // final ise override izin verilmez
+    final public void baseinfo() {
+        System.out.println("method of Class Kus");
+    }
+}
+
+class Baykus extends Kus {
+    /*
+    Derlenmez. Java hata verir.
+    */
+    @Override
+    public void baseinfo() {
+        System.out.println("method of Class Baykus");
+    }
+}
+----
+
+[source,python]
+----
+@dataclass
+class Item:
+    name: str
+----
+
+=== `static` Class
+
+Java dilinde statik sınıflar bir sınıfın içinde tanımlanabilir. Bir sınıfın dışında tanımlanamaz. Bir sınıf üzerinden nesne tanımlamada kullanılır.
+
+[source,java]
+----
+public class Outer {
+   // Java Arrays with Answers
+   static class Inner {
+      public void my_method() {
+         System.out.println("This is my nested class");
+      }
+   }
+
+   public static void main(String args[]) {
+      Outer.Inner nested = new Outer.Inner();
+      nested.my_method();
+   }
+}
+----
 
 == Örnek Proje
 
@@ -147,15 +270,15 @@ Bu interface yi implemete etmek isteyen sınıflar `public void yuru()` metodunu
 [plantuml]
 ----
 class Kus {
-    String isim
-    int yas
+    - String isim
+    - int yas
 
-    String getIsim()
-    int getYas()
-    void setIsim()
-    void setYas()
-    void yazYas()
-    void yazIsim()
+    + String getIsim()
+    + int getYas()
+    + void setIsim()
+    + void setYas()
+    + void yazYas()
+    + void yazIsim()
 }
 ----
 
@@ -180,15 +303,15 @@ Kuş sınıfından türetilmiştir. `Yuruyebilir` ve `Ucabilir` sınıflarını 
 [plantuml]
 ----
 class Baykus {
-    String isim
-    int yas
+    - String isim
+    - int yas
 
-    String getIsim()
-    int getYas()
-    void setIsim()
-    void setYas()
-    void yazYas()
-    void yazIsim()
+    + String getIsim()
+    + int getYas()
+    + void setIsim()
+    + void setYas()
+    + void yazYas()
+    + void yazIsim()
 }
 ----
 
@@ -199,15 +322,15 @@ Kuş sınıfından türetilmiştir. `Yuruyebilir` ve `Ucabilir` sınıflarını 
 [plantuml]
 ----
 class Guvercin {
-    String isim
-    int yas
+    - String isim
+    - int yas
 
-    String getIsim()
-    int getYas()
-    void setIsim()
-    void setYas()
-    void yazYas()
-    void yazIsim()
+    + String getIsim()
+    + int getYas()
+    + void setIsim()
+    + void setYas()
+    + void yazYas()
+    + void yazIsim()
 }
 ----
 
@@ -218,15 +341,15 @@ Kuş sınıfından türetilmiştir. `Yuruyebilir` sınıfını implemente eder.
 [plantuml]
 ----
 class DeveKusu {
-    String isim
-    int yas
+    - String isim
+    - int yas
 
-    String getIsim()
-    int getYas()
-    void setIsim()
-    void setYas()
-    void yazYas()
-    void yazIsim()
+    + String getIsim()
+    + int getYas()
+    + void setIsim()
+    + void setYas()
+    + void yazYas()
+    + void yazIsim()
 }
 ----
 

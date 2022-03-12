@@ -1,24 +1,28 @@
 @startuml
 
 interface Ucabilir {
-    ucmaHizi
-    uc()
+    - ucmaHizi
+    + uc()
+    + getUcmaHizi()
+    + setUcmaHizi()
 }
 
 interface Yuruyebilir {
-    YurumeHizi
-    yuz()
+    - yurumeHizi
+    + yuru()
+    + getYurumeHizi()
+    + setYurumeHizi()
 }
 
 class Kus {
-    String isim
-    int yas
-    String getIsim()
-    int getYas()
-    void setIsim()
-    void setYas()
-    void yazYas()
-    void yazIsim()
+    - String isim
+    - int yas
+    + String getIsim()
+    + int getYas()
+    + void setIsim()
+    + void setYas()
+    + void yazYas()
+    + void yazIsim()
 }
 
 class Baykus {
@@ -40,6 +44,9 @@ Kus <|-- DeveKusu
 Yuruyebilir <|-- Baykus
 Ucabilir <|-- Baykus
 
+Yuruyebilir <|-- Guvercin
 Ucabilir <|-- Guvercin
+
+Yuruyebilir <|-- DeveKusu
 
 @enduml
