@@ -1,0 +1,68 @@
+= Thread Safe Singeleton Database Pool
+
+Bu uygulama connection pool ile bir veritabanı uygulamasını simüle eder. Bu uygulama aşağıda uml diyagramında gösterilen sınıflaradan oluşur.
+
+[plantuml,uml.png]
+----
+class RuntimeError {
+
+}
+
+class ObjectPoolNotAwailable {
+
+}
+
+class DBConnection {
+    + db_operation()
+    + connect()
+}
+
+class DbPoolObj {
+    + tid: string
+    + available: bool
+    + obj: DBConnection
+}
+
+class DBConnectionPool {
+    - _mutex: Mutex
+    - _poll: DbPoolObj[]
+    
+    + getObject()
+    + releaseObject()
+}
+
+ObjectPoolNotAwailable <|-- RuntimeError
+----
+
+== `ObjectPoolNotAwailable` Sınıfı
+
+Bu sınıf `DBConnectionPool` sınıfında kullanıma uygun bir `DBConnection` nesnesi olmadığı durumlarda fırlatılan bir hatadır (exception).
+
+`DBConnectionPool` dan bir connection istenildiği durumlarda kullanılmalıdır. Bu hatanın olması durumunda bir süre beklenip tekrar denenebilir.
+
+== `DBConnection` Sınıfı
+
+Veritabanı işlemleri için kullanılan sınıftır. Bu sınıf veritabanına bağlanma ve veritabanı sorgusu çalıştırma gibi işlemleri yerine getirir. Bu sınıfın doğrudan kullanılması tavsiye edilmez. Bunun yerine lütfen `DBConnectionPool` sınıfını kullanın.
+
+Bu sınıfın 2 metodu vardır.
+
+* `connect()` sınıftan nesne üretildiğinde çağrılır. Veritabanına bağlanmayı sağlar.
+* `db_operation()` veritabanı işlemini gerçekleştiren sınıftır.
+
+== `DbPoolObj` Sınıfı
+
+Bu sınıf connection pool için gerekli bilgileri tutan sınıftır. Bu bilgiler thread id değeri, connection müsaitlik durumu ve connection nesnesidir.
+
+Bu sınıfın üç öğresi vardır. Bunlar:
+
+* `tid` thread'in ismini/id sini tutur.
+* `available` connection nesnesinin kullanımda olup olmadığı bilgisini tutar.
+* `obj` connection nesnesinin kendisini tutar.
+
+== `DBConnectionPool` Sınıfı
+
+DBConnectionPool sınıfı veritabanı işlemleri için connection pool oluşturuna bu connection poolu yöneten temel sınıftır. Bu sınıf singeleton yapıda çalışır. Yani bu sınıftan üretilen bütün nesneler aynı nesnedir.
+
+Bu sınıf varsayılan olarak 10 tane connection oluşturur. Bu sayı konfigüre edilebilir.
+
+`DBConnectionPool` sınıfı multi-thread çalışma düzeninde thread-safe yapı sağlamak için sınıf içerisinde bir mutex barındırır. Bu butex connection alma ve connection release etme aşamalarında kilitlenir.
