@@ -44,12 +44,16 @@ class DbPoolObj:
 
 
 class DBConnectionPool:
+    # ilk nesne oluşturulurken kullanılacak lock
+    _obj_mutex = threading.Lock()
+
     # Python dili için singeleton yapısı __new__ özel metodu ile kurulabilir.
     def __new__(cls):
         # sınıf üzerinde bir nesne banımlanmış ise onu döndür.
         # değilse yeni bir tane oluştur
-        if not hasattr(cls, "instance"):
-            cls.instance = super(DBConnectionPool, cls).__new__(cls)
+        with cls._obj_mutex:
+            if not hasattr(cls, "instance"):
+                cls.instance = super(DBConnectionPool, cls).__new__(cls)
         return cls.instance
 
     def __init__(self):
